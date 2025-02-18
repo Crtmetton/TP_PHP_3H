@@ -1,5 +1,5 @@
 <?php
-require_once 'config/database.php';
+require_once '../Config/database.php';
 
 try {
     $db = Database::getInstance();
@@ -11,6 +11,6 @@ try {
 
     echo "<br>Nombre d'utilisateurs : " . $result['total'];
 } catch (Exception $e) {
-    echo "❌ Erreur : " . $e->getMessage();
+    echo "Erreur : " . $e->getMessage();
 }
 ?>

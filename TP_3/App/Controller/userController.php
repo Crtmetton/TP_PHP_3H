@@ -8,7 +8,7 @@ class UserController {
             $email = trim($_POST['email']);
             $password = trim($_POST['password']);
 
-            // Vérifier si l'utilisateur existe
+
             $user = User::findByEmail($email);
             if (!$user) {
                 echo "Cet utilisateur n'existe pas.";
@@ -27,11 +27,27 @@ class UserController {
         }
     }
 
-    public static function logout() {
-        session_start();
-        session_destroy();
-        header('Location: /login');
-        exit();
+    public static function doRegister() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $name = trim($_POST['name']);
+            $email = trim($_POST['email']);
+            $password = trim($_POST['password']);
+
+            if (User::findByEmail($email)) {
+                echo "Cet email est déjà utilisé.";
+                return;
+            }
+
+
+            if (User::create($name, $email, $password)) {
+                header('Location: /login');
+                exit();
+            } else {
+                echo "Erreur lors de l'inscription.";
+            }
+        } else {
+            require_once '../Views/register.php';
+        }
     }
 }
 ?>
