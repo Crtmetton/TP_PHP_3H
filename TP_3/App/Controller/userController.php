@@ -1,25 +1,37 @@
 <?php
-require_once __DIR__ . '/../Models/user.php';
+require_once 'app/Models/User.php';
+session_start();
 
-class userController {
-    public static function doRegister() {
+class UserController {
+    public static function doLogin() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $name = trim($_POST['name']);
             $email = trim($_POST['email']);
             $password = trim($_POST['password']);
 
-            // Création de l'utilisateur
-            $result = User::create($name, $email, $password);
-
-            if ($result) {
-                header('Location: /'); // Redirection après inscription réussie
-                exit();
-            } else {
-                echo "❌ Erreur lors de l'inscription.";
+            // Vérifier si l'utilisateur existe
+            $user = User::findByEmail($email);
+            if (!$user) {
+                echo "Cet utilisateur n'existe pas.";
+                return;
             }
-        } else {
-            require_once '../views/register.php'; // Charger le formulaire si GET
+
+            // Vérifier si le mot de passe est correct
+            if (!password_verify($password, $user['password'])) {
+                echo "Mot de passe incorrect.";
+                return;
+            }
+
+            // Connexion réussie → Création de session
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['user_name'] = $user['name'];
         }
+    }
+
+    public static function logout() {
+        session_start();
+        session_destroy();
+        header('Location: /login');
+        exit();
     }
 }
 ?>
